@@ -1,7 +1,6 @@
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
     // 获取DOM元素
-    const video = document.getElementById('mainVideo');
     const playBtn = document.getElementById('playBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const restartBtn = document.getElementById('restartBtn');
@@ -21,6 +20,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const generatePoemBtn = document.getElementById('generatePoem');
     const poemResult = document.getElementById('poemResult');
     const poemHistory = document.getElementById('poemHistory');
+
+    // YouTube 播放器实例
+    let player;
+    let timeUpdateInterval;
+    
+    // 视频ID
+    const YOUTUBE_VIDEO_ID = 'wIzL76GFPHs';
 
     // 视频时间点描述
     const timeDescriptions = [
@@ -146,6 +152,159 @@ document.addEventListener('DOMContentLoaded', function() {
         "云冈石窟世无双，石佛万千呈瑞祥。\n古今对话凭科技，文明薪火永传扬。"
     ];
 
+    // 在YouTube播放器初始化函数前添加加载状态
+    function initYouTubePlayer() {
+        // 检查YouTube API是否已加载
+        if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+            console.log('等待YouTube API加载...');
+            // 延迟重试
+            setTimeout(initYouTubePlayer, 500);
+            return;
+        }
+        
+        console.log('初始化YouTube播放器，视频ID:', YOUTUBE_VIDEO_ID);
+        
+        // 添加加载状态
+        const videoContainer = document.querySelector('.video-container');
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'video-loading';
+        loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在加载视频...';
+        videoContainer.appendChild(loadingDiv);
+        
+        // 创建播放器实例
+        player = new YT.Player('youtubePlayer', {
+            height: '100%',
+            width: '100%',
+            videoId: YOUTUBE_VIDEO_ID,
+            playerVars: {
+                'autoplay': 0,
+                'controls': 1,
+                'disablekb': 0,
+                'enablejsapi': 1,
+                'fs': 1,
+                'modestbranding': 1,
+                'rel': 0,
+                'showinfo': 0,
+                'iv_load_policy': 3 // 不显示视频注释
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange,
+                'onError': onPlayerError
+            }
+        });
+    }
+
+    // YouTube播放器准备就绪
+    function onPlayerReady(event) {
+        console.log('YouTube播放器已准备就绪');
+        
+        // 移除加载状态
+        const loadingDiv = document.querySelector('.video-loading');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+        
+        // 设置总时长
+        const duration = player.getDuration();
+        if (duration && duration > 0) {
+            totalTimeEl.textContent = formatTime(duration);
+        } else {
+            totalTimeEl.textContent = '3:00'; // 默认值
+        }
+        
+        // 初始化视频标签
+        initVideoTags();
+        
+        // 默认显示第一个标签的详情
+        showTagDetail('wutai');
+    }
+
+    // YouTube播放器状态变化
+    function onPlayerStateChange(event) {
+        switch(event.data) {
+            case YT.PlayerState.PLAYING:
+                // 开始更新时间
+                startTimeUpdate();
+                break;
+            case YT.PlayerState.PAUSED:
+                // 停止更新时间
+                stopTimeUpdate();
+                break;
+            case YT.PlayerState.ENDED:
+                // 视频结束，停止更新时间
+                stopTimeUpdate();
+                // 滚动到问答区域
+                document.querySelector('.quiz-section').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+                break;
+        }
+    }
+
+    // YouTube播放器错误处理
+    function onPlayerError(event) {
+        console.error('YouTube播放器错误代码:', event.data);
+        
+        // 移除加载状态
+        const loadingDiv = document.querySelector('.video-loading');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+        
+        // 显示错误信息
+        const videoContainer = document.querySelector('.video-container');
+        let errorMessage = '';
+        
+        switch(event.data) {
+            case 2:
+                errorMessage = '视频ID无效或视频不存在';
+                break;
+            case 5:
+                errorMessage = 'HTML5播放器错误，请尝试其他浏览器';
+                break;
+            case 100:
+                errorMessage = '视频不存在或已被删除';
+                break;
+            case 101:
+            case 150:
+                errorMessage = '视频所有者禁止嵌入播放';
+                break;
+            default:
+                errorMessage = '视频加载失败，错误代码: ' + event.data;
+        }
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'video-error';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+            <h3>视频加载失败</h3>
+            <p>${errorMessage}</p>
+            <p>您可以 <a href="https://youtu.be/${YOUTUBE_VIDEO_ID}" target="_blank">点击这里直接访问YouTube观看视频</a></p>
+            <p style="margin-top: 15px; font-size: 0.9rem; color: #ccc;">
+                如果这是您的视频，请确保已设置为"公开"或"不公开（可嵌入）"
+            </p>
+        `;
+        videoContainer.appendChild(errorDiv);
+    }
+
+    // 开始更新时间显示
+    function startTimeUpdate() {
+        if (timeUpdateInterval) {
+            clearInterval(timeUpdateInterval);
+        }
+        timeUpdateInterval = setInterval(updateTimeDisplay, 1000);
+    }
+
+    // 停止更新时间显示
+    function stopTimeUpdate() {
+        if (timeUpdateInterval) {
+            clearInterval(timeUpdateInterval);
+            timeUpdateInterval = null;
+        }
+    }
+
     // 初始化视频标签
     function initVideoTags() {
         // 清空现有标签
@@ -200,33 +359,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 更新视频时间显示
     function updateTimeDisplay() {
-        if (!video.duration) return;
+        if (!player || !player.getCurrentTime) return;
         
-        const current = formatTime(video.currentTime);
-        const total = formatTime(video.duration);
-        
-        currentTimeEl.textContent = current;
-        totalTimeEl.textContent = total;
-        
-        // 更新当前时间段描述
-        const currentSec = video.currentTime;
-        for (const desc of timeDescriptions) {
-            if (currentSec >= desc.start && currentSec < desc.end) {
-                timeDescEl.textContent = desc.title;
-                break;
+        try {
+            const current = player.getCurrentTime();
+            const total = player.getDuration() || 180; // 默认3分钟
+            
+            currentTimeEl.textContent = formatTime(current);
+            totalTimeEl.textContent = formatTime(total);
+            
+            // 更新当前时间段描述
+            for (const desc of timeDescriptions) {
+                if (current >= desc.start && current < desc.end) {
+                    timeDescEl.textContent = desc.title;
+                    break;
+                }
             }
+            
+            // 显示/隐藏视频标签
+            const videoTags = document.querySelectorAll('.video-tag');
+            videoTags.forEach(tag => {
+                const tagTime = parseInt(tag.dataset.time);
+                if (Math.abs(current - tagTime) < 5) {
+                    tag.style.display = 'flex';
+                } else {
+                    tag.style.display = 'none';
+                }
+            });
+        } catch (error) {
+            console.warn('获取播放器时间时出错:', error);
         }
-        
-        // 显示/隐藏视频标签
-        const videoTags = document.querySelectorAll('.video-tag');
-        videoTags.forEach(tag => {
-            const tagTime = parseInt(tag.dataset.time);
-            if (Math.abs(currentSec - tagTime) < 5) {
-                tag.style.display = 'flex';
-            } else {
-                tag.style.display = 'none';
-            }
-        });
     }
 
     // 格式化时间（秒 -> 分:秒）
@@ -407,16 +569,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 绑定事件
-    playBtn.addEventListener('click', () => video.play());
-    pauseBtn.addEventListener('click', () => video.pause());
-    restartBtn.addEventListener('click', () => {
-        video.currentTime = 0;
-        video.play();
+    playBtn.addEventListener('click', () => {
+        if (player && player.playVideo) {
+            player.playVideo();
+        }
     });
     
-    video.addEventListener('timeupdate', updateTimeDisplay);
-    video.addEventListener('loadedmetadata', () => {
-        totalTimeEl.textContent = formatTime(video.duration);
+    pauseBtn.addEventListener('click', () => {
+        if (player && player.pauseVideo) {
+            player.pauseVideo();
+        }
+    });
+    
+    restartBtn.addEventListener('click', () => {
+        if (player && player.seekTo) {
+            player.seekTo(0);
+            player.playVideo();
+        }
     });
     
     tags.forEach(tag => {
@@ -442,33 +611,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 视频结束时显示问答
-    video.addEventListener('ended', () => {
-        // 平滑滚动到问答区域
-        document.querySelector('.quiz-section').scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
-    });
-
     // 初始化
-    initVideoTags();
     initQuiz();
     
-    // 默认显示第一个标签的详情
-    showTagDetail('wutai');
-    
-    // 视频加载完成后设置总时长
-    video.addEventListener('loadeddata', () => {
-        if (video.duration) {
-            totalTimeEl.textContent = formatTime(video.duration);
-        }
-    });
-    
-    // 如果视频没有加载，设置默认时长
-    setTimeout(() => {
-        if (!video.duration || video.duration === Infinity) {
-            totalTimeEl.textContent = '3:00';
-        }
-    }, 1000);
+    // 确保YouTube API已加载
+    if (typeof YT !== 'undefined' && YT.loaded) {
+        initYouTubePlayer();
+    } else {
+        // 监听YouTube API加载
+        window.onYouTubeIframeAPIReady = function() {
+            console.log('YouTube API已加载');
+            initYouTubePlayer();
+        };
+        
+        // 如果YouTube API未加载，设置超时检查
+        setTimeout(() => {
+            if (!player && typeof YT !== 'undefined' && YT.loaded) {
+                initYouTubePlayer();
+            }
+        }, 2000);
+    }
 });

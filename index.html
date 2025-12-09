@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.youtube.com/iframe_api"></script>
     <title>云冈石窟 - AI数字艺术宣传片</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,11 +27,8 @@
         <!-- 视频播放区域 -->
         <section class="video-section">
             <div class="video-container">
-                <!-- 视频播放器 -->
-                <video id="mainVideo" controls>
-                    <source src="https://youtu.be/wIzL76GFPHs" type="video/mp4">
-                    您的浏览器不支持视频播放，请使用现代浏览器如Chrome、Firefox等。
-                </video>
+                <!-- YouTube嵌入播放器 -->
+                <div id="youtubePlayer"></div>
                 
                 <!-- 视频叠加层 - 用于显示文字标签 -->
                 <div class="video-overlay">

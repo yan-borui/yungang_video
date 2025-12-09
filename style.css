@@ -77,10 +77,44 @@ body {
 .video-container {
     position: relative;
     width: 100%;
+    height: 500px;
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 20px;
     background: #000;
+}
+
+#youtubePlayer {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+/* 视频错误提示样式 */
+.video-error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    z-index: 20;
+}
+
+.video-error a {
+    color: #8b4513;
+    text-decoration: underline;
+}
+
+.video-error a:hover {
+    color: #a0522d;
 }
 
 video {
