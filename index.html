@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云冈石窟 - AI数字艺术宣传片</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 标题区域 -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-mountain"></i>
+                <h1>云冈石窟</h1>
+                <span class="subtitle">AI数字艺术宣传片</span>
+            </div>
+            <div class="project-info">
+                北魏石窟 · AI技术复原 · 交互体验
+            </div>
+        </header>
+
+        <!-- 视频播放区域 -->
+        <section class="video-section">
+            <div class="video-container">
+                <!-- 视频播放器 -->
+                <video id="mainVideo" controls>
+                    <source src="https://youtu.be/wIzL76GFPHs" type="video/mp4">
+                    您的浏览器不支持视频播放，请使用现代浏览器如Chrome、Firefox等。
+                </video>
+                
+                <!-- 视频叠加层 - 用于显示文字标签 -->
+                <div class="video-overlay">
+                    <!-- 文字标签会通过JS动态添加到这里 -->
+                </div>
+                
+                <!-- 视频控制按钮 -->
+                <div class="video-controls">
+                    <button id="playBtn" class="control-btn">
+                        <i class="fas fa-play"></i> 播放
+                    </button>
+                    <button id="pauseBtn" class="control-btn">
+                        <i class="fas fa-pause"></i> 暂停
+                    </button>
+                    <button id="restartBtn" class="control-btn">
+                        <i class="fas fa-redo"></i> 重播
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 当前时间点显示 -->
+            <div class="current-moment">
+                <span id="currentTime">0:00</span> / <span id="totalTime">3:00</span>
+                <div class="time-description" id="timeDesc">开篇：云冈石窟的恢弘气势</div>
+            </div>
+        </section>
+
+        <!-- 互动标签信息面板 -->
+        <section class="info-panel">
+            <h2><i class="fas fa-tags"></i> 云冈石窟知识标签</h2>
+            <div class="tags-container">
+                <!-- 标签会通过JS动态激活 -->
+                <div class="tag" data-tag="wutai">
+                    <i class="fas fa-mountain"></i>
+                    <span>武州山南麓</span>
+                </div>
+                <div class="tag" data-tag="tanyao">
+                    <i class="fas fa-hands-praying"></i>
+                    <span>昙曜五窟</span>
+                </div>
+                <div class="tag" data-tag="music">
+                    <i class="fas fa-music"></i>
+                    <span>音乐窟</span>
+                </div>
+                <div class="tag" data-tag="flying">
+                    <i class="fas fa-feather"></i>
+                    <span>飞天演变</span>
+                </div>
+                <div class="tag" data-tag="tech">
+                    <i class="fas fa-robot"></i>
+                    <span>科技保护</span>
+                </div>
+            </div>
+            
+            <!-- 详细信息展示区 -->
+            <div class="detail-card">
+                <div class="detail-header">
+                    <h3 id="detailTitle">点击上方标签了解详情</h3>
+                    <div class="detail-time" id="detailTime">--:--</div>
+                </div>
+                <div class="detail-content" id="detailContent">
+                    选择一个标签，查看云冈石窟的相关信息。每个标签对应视频中的一个关键知识点。
+                </div>
+            </div>
+        </section>
+
+        <!-- 问答互动区域 -->
+        <section class="quiz-section">
+            <h2><i class="fas fa-question-circle"></i> 云冈石窟知识问答</h2>
+            <div class="quiz-intro">
+                观看完宣传片后，测试一下你对云冈石窟的了解吧！
+            </div>
+            
+            <div class="quiz-container" id="quizContainer">
+                <!-- 问答内容会通过JS动态生成 -->
+            </div>
+            
+            <div class="quiz-controls">
+                <button id="submitQuiz" class="quiz-btn">
+                    <i class="fas fa-paper-plane"></i> 提交答案
+                </button>
+                <button id="resetQuiz" class="quiz-btn secondary">
+                    <i class="fas fa-sync-alt"></i> 重新开始
+                </button>
+            </div>
+            
+            <div class="quiz-result" id="quizResult">
+                <!-- 结果会在这里显示 -->
+            </div>
+        </section>
+
+        <!-- 诗歌生成器 -->
+        <section class="poem-section">
+            <h2><i class="fas fa-feather-alt"></i> 云冈诗意生成器</h2>
+            <div class="poem-intro">
+                输入关键词，生成一首关于云冈石窟的诗歌
+            </div>
+            
+            <div class="poem-input">
+                <input type="text" id="poemKeyword" placeholder="如：石窟、佛像、飞天、北魏..." maxlength="10">
+                <button id="generatePoem">
+                    <i class="fas fa-magic"></i> 生成诗歌
+                </button>
+            </div>
+            
+            <div class="poem-result" id="poemResult">
+                <!-- 生成的诗歌会显示在这里 -->
+                <div class="poem-placeholder">
+                    <i class="fas fa-quote-left"></i>
+                    <p>诗句将在这里显示...</p>
+                    <i class="fas fa-quote-right"></i>
+                </div>
+            </div>
+            
+            <div class="poem-history" id="poemHistory">
+                <!-- 历史记录会在这里显示 -->
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="team-info">
+                    <h4>项目团队</h4>
+                    <p>张蕴书 · 范闽荣 · 于子峰 · 闫博睿</p>
+                </div>
+                <div class="tech-info">
+                    <h4>技术实现</h4>
+                    <p>AI视频生成 · 交互式网页 · 云冈文化传播</p>
+                </div>
+                <div class="copyright">
+                    <p>© 2025 云冈石窟AI宣传片项目 | 仅供学习展示使用</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 加载JS文件 -->
+    <script src="script.js"></script>
+</body>
+</html>
