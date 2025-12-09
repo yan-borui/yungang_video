@@ -518,6 +518,80 @@ h2 {
     border-left: 3px solid #d7ccc8;
 }
 
+.github-card-simple {
+    background: #f9f7f2;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 25px;
+    border: 2px solid #e8e0d1;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.card-header i {
+    font-size: 2rem;
+    color: #333;
+}
+
+.card-header h4 {
+    color: #5d4037;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.github-card-simple p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.card-links {
+    display: flex;
+    gap: 15px;
+}
+
+.github-link, .demo-link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.github-link {
+    background: #333;
+    color: white;
+}
+
+.github-link:hover {
+    background: #444;
+}
+
+.demo-link {
+    background: #8b4513;
+    color: white;
+}
+
+.demo-link:hover {
+    background: #a0522d;
+}
+
+@media (max-width: 768px) {
+    .card-links {
+        flex-direction: column;
+    }
+}
+
 /* 页脚 */
 .footer {
     margin-top: 50px;
