@@ -577,15 +577,6 @@ h2 {
     background: #444;
 }
 
-.demo-link {
-    background: #8b4513;
-    color: white;
-}
-
-.demo-link:hover {
-    background: #a0522d;
-}
-
 @media (max-width: 768px) {
     .card-links {
         flex-direction: column;
